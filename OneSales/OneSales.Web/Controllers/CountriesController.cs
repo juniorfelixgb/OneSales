@@ -21,7 +21,9 @@ namespace OneSales.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Countries.ToListAsync());
+            return View(await _context.Countries
+                                      .Include(c => c.Departments)
+                                      .ToListAsync());
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -32,6 +34,8 @@ namespace OneSales.Web.Controllers
             }
 
             var country = await _context.Countries
+                .Include(c => c.Departments)
+                .ThenInclude(d => d.Cities)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (country == null)
             {
@@ -107,6 +111,7 @@ namespace OneSales.Web.Controllers
                 {
                     _context.Update(country);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException UpdateException)
                 {
@@ -146,9 +151,61 @@ namespace OneSales.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CountryExists(int id)
+        [HttpGet]
+        public async Task<IActionResult> AddDepartment(int? Id)
         {
-            return _context.Countries.Any(e => e.Id == id);
+            //if (Id == null)
+            //{
+            //    return NotFound();
+            //}
+
+            var country = await _context.Countries.FindAsync(Id);
+            //if (country == null)
+            //{
+            //    return NotFound();
+            //}
+            var model = new Department() { IdCountry = country.Id };
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddDepartment(Department department)
+        {
+            if (ModelState.IsValid)
+            {
+                var country = await _context.Countries
+                    .Include(c => c.Departments)
+                    .FirstOrDefaultAsync(c => c.Id == department.IdCountry);
+                //if (country != null)
+                //{
+                //    return NotFound();
+                //}
+                try
+                {
+                    department.Id = 0;
+                    country.Departments.Add(department);
+                    _context.Update(country);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Details", "Countries", new { Id = country.Id});
+                }
+                catch (DbUpdateException UpdateException)
+                {
+                    if (UpdateException.Data.Contains("duplicate"))
+                    {
+                        ModelState.AddModelError(string.Empty, "There are a record with the same name.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, UpdateException.InnerException.Message);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+            }
+            return View(department);
         }
     }
 }
