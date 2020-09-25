@@ -25,6 +25,7 @@ namespace OneSales.Web.Controllers
 
         public IActionResult Privacy()
         {
+            _logger.LogInformation("Hola mundo");
             return View();
         }
 

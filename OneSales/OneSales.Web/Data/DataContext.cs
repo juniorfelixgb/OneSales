@@ -18,6 +18,8 @@ namespace OneSales.Web.Data
         public DbSet<Country> Countries { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<Department> Departments { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Product> Products { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,6 +33,14 @@ namespace OneSales.Web.Data
 
             modelBuilder.Entity<Department>()
                         .HasIndex(d => d.Name)
+                        .IsUnique();
+
+            modelBuilder.Entity<Category>()
+                        .HasIndex(c => c.Name)
+                        .IsUnique();
+
+            modelBuilder.Entity<Product>()
+                        .HasIndex(p => p.Name)
                         .IsUnique();
         }
     }

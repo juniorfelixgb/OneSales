@@ -178,7 +178,7 @@ namespace OneSales.Web.Controllers
                     country.Departments.Add(department);
                     _context.Update(country);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction("Details", "Countries", new { Id = country.Id});
+                    return RedirectToAction("Details", "Countries", new { country.Id});
                 }
                 catch (DbUpdateException UpdateException)
                 {
@@ -262,7 +262,7 @@ namespace OneSales.Web.Controllers
                                         .FirstOrDefault(d => d.Id == department.Id) != null);
             _context.Departments.Remove(department);
             await _context.SaveChangesAsync();
-            return RedirectToAction("Details", "Countries", new { Id = country.Id });
+            return RedirectToAction("Details", "Countries", new { country.Id });
         }
 
         public async Task<IActionResult> AddCity(int? Id)
@@ -287,7 +287,7 @@ namespace OneSales.Web.Controllers
                     department.Cities.Add(city);
                     _context.Update(department);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction("DetailsDepartment", "Countries", new { Id = department.Id });
+                    return RedirectToAction("DetailsDepartment", "Countries", new { department.Id });
                 }
                 catch (DbUpdateException UpdateException)
                 {
@@ -356,7 +356,7 @@ namespace OneSales.Web.Controllers
                                                        .FirstOrDefault(c => c.Id == city.Id) != null);
             _context.Cities.Remove(city);
             await _context.SaveChangesAsync();
-            return RedirectToAction("DetailsDepartment", new { Id = department.Id });
+            return RedirectToAction("DetailsDepartment", new { department.Id });
         }
     }
 }
