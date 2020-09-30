@@ -71,5 +71,74 @@ namespace OneSales.Web.Controllers
             }
             return View(model);
         }
+
+        public async Task<IActionResult> Edit(int? Id)
+        {
+            var category = await _context.Categories.FindAsync(Id);
+            var viewModel = _converterHelper.ToCategoryViewModel(category);
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(CategoryViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                Guid imageId = model.ImageId;
+                if (model.ImageFile != null)
+                {
+                    imageId = await _blobHelper.UploadBlobAsync(model.ImageFile, "categories");
+                }
+                try
+                {
+                    var category = _converterHelper.ToCategory(model, imageId, false);
+                    _context.Update(category);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException UpdateException)
+                {
+                    if (UpdateException.InnerException.Message.Contains("duplicate"))
+                    {
+                        ModelState.AddModelError(string.Empty, "There are a record with the same name.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, UpdateException.InnerException.Message);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.Message);
+                }
+            }
+            return View(model);
+        }
+
+        public async Task<IActionResult> Delete(int? Id)
+        {
+            if (Id == null)
+            {
+                return NotFound();
+            }
+
+            var category = await _context.Categories
+                                         .FirstOrDefaultAsync(c => c.Id == Id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                _context.Categories.Remove(category);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

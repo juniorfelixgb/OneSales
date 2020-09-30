@@ -25,7 +25,7 @@ namespace OneSales.Web.Data
             {
                 _context.Countries.Add(new Country()
                 {
-                    Name = "Colombia",
+                    Name = "China",
                     Departments = new List<Department>()
                     { 
                         new Department()
@@ -60,7 +60,7 @@ namespace OneSales.Web.Data
                 });
                 _context.Countries.Add(new Country()
                 {
-                    Name = "USA",
+                    Name = "Francia",
                     Departments = new List<Department>() 
                     { 
                         new Department()

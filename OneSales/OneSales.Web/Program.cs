@@ -17,7 +17,7 @@ namespace OneSales.Web
         public static void Main(string[] args)
         {
             IWebHost host = CreateWebHostBuilder(args).Build();
-            RunSeeding(host);
+            //RunSeeding(host);
             host.Run();
         }
 
@@ -26,7 +26,8 @@ namespace OneSales.Web
             var scopeFactory = host.Services.GetService<IServiceScopeFactory>();
             using IServiceScope scope = scopeFactory.CreateScope();
             var seedDb = scope.ServiceProvider.GetService<SeedDb>();
-            seedDb.SeedAsync().Wait();
+            seedDb.SeedAsync()
+                  .Wait();
         }
 
         private static IWebHostBuilder CreateWebHostBuilder(string[] args)

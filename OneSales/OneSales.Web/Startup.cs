@@ -31,6 +31,7 @@ namespace OneSales.Web
             services.AddTransient<SeedDb>();
             services.AddTransient<IConverterHelper, ConverterHelper>();
             services.AddTransient<IBlobHelper, BlobHelper>();
+            services.AddTransient<IComboHelper, ComboHelper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
